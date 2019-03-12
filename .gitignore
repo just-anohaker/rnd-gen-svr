@@ -78,3 +78,9 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# ignore package-lock.json
+package-lock.json
+
+# ignore leveldb for random
+*.leveldb

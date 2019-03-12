@@ -9,10 +9,6 @@ const BigNumber = require("bignumber.js");
 const chaos = require("./chaos");
 
 class Generator {
-    constructor() {
-
-    }
-
     async rnd(hashes, iterCnt, sha256IterCnt) {
         assert(_.isArray(hashes) && hashes.length > 0
             , "hashes must be an array with more then one element");

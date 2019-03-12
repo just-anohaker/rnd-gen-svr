@@ -8,16 +8,24 @@ const BodyParser = require("koa-bodyparser");
 const SocketIO = require("socket.io");
 const program = require("commander");
 
-const { controller: gencontroller } = require("./src/modules/random-generator");
+const appContext = require("./src/app-context");
 
-let koaApp = null;
-let socketioSvr = null;
+const kAppModules = [
+    ["random-generator", "./src/modules/random-generator"]
+];
 
-function setup(options) {
-    void options;
+const _initModules = async options => {
+    for (let module of kAppModules) {
+        const ClzModule = require(module[1]);
+        const inst = new ClzModule();
+        inst && await inst.init(options);
+        appContext.appendModule(module[0], inst);
+    }
+};
 
+const _setup = async options => {
     const app = new Koa();
-    koaApp = app;
+    appContext.KoaApp = app;
 
     app.on("error", (err, ctx) => {
         let reqinfo = null;
@@ -38,19 +46,16 @@ function setup(options) {
     APIs.forEach(el => {
         if (el.endsWith(".js")) {
             const APIModule = require(path.resolve(apiDir, el));
-            APIModule(koaApp, options);
+            APIModule(app, options);
         }
     });
 
     const server = app.listen(options.port, options.hostname, () => {
         console.log(`[Server] Listening on ${options.hostname}:${options.port}.`);
     });
-    socketioSvr = SocketIO(server);
-    gencontroller.start(rndInfo => {
-        console.log(`[NewRandom] ${rndInfo.random}.`);
-        socketioSvr.sockets.emit("newrandom", { random: rndInfo.random, index: rndInfo.index });
-    });
-}
+    const socketio = SocketIO(server);
+    appContext.SocketIO = socketio;
+};
 
 function main() {
     program
@@ -72,39 +77,49 @@ function main() {
     options.iter = Number(program.iter);
     options.sha256Iter = Number(program.sha256Iter);
     options.generateInterval = Number(program.generateInterval);
-    setup(options);
+    appContext.AppOptions = options;
 
-    process.on("error", error => {
-        console.error(`[Application] error: ${error.toString()}`);
-    });
+    _initModules(appContext.AppOptions)
+        .then(() => {
+            return _setup(appContext.AppOptions);
+        })
+        .then(() => {
+            process.emit("app-ready");
+        })
+        .then(() => {
+            process.on("error", error => {
+                console.error(`[Application] error: ${error.toString()}`);
+            });
 
-    process.on("uncaughtException", error => {
-        console.error(`[UncaughtException] ${error.toString()}`);
-    });
-    process.on("unhandledRejection", (reason, promise) => {
-        void promise;
-        console.error(`[UnhandledRejection] ${reason}`);
-    });
-    process.on("rejectionHandled", promise => {
-        void promise;
-        console.error("[RejectionHandled] happended.");
-    });
+            process.on("uncaughtException", error => {
+                console.error(`[UncaughtException] ${error.toString()}`);
+            });
+            process.on("unhandledRejection", (reason, promise) => {
+                void promise;
+                console.error(`[UnhandledRejection] ${reason}`);
+            });
+            process.on("rejectionHandled", promise => {
+                void promise;
+                console.error("[RejectionHandled] happended.");
+            });
 
-    process.on("SIGTERM", signal => {
-        void signal;
+            process.on("SIGTERM", signal => {
+                void signal;
 
-        process.exit();
-    });
-    process.on("SIGINT", signal => {
-        void signal;
+                process.emit("app-cleanup");
+            });
+            process.on("SIGINT", signal => {
+                void signal;
 
-        process.exit();
-    });
-    process.on("exit", code => {
-        void code;
-
-        gencontroller.stop();
-    });
+                process.emit("app-cleanup");
+            });
+            process.on("app-cleanup", () => {
+                process.exit();
+            });
+        })
+        .catch(error => {
+            console.log("[App] start error:", error);
+        });
 }
 
 main();

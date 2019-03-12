@@ -2,6 +2,4 @@
 
 const Controller = require("./controller");
 
-module.exports = {
-    controller: new Controller
-};
+module.exports = Controller;

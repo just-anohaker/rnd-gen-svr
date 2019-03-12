@@ -1,12 +1,12 @@
 "use strict";
 
 const SocketIOClient = require("socket.io-client");
-const shufflefy = require("shufflefy");
 const { modules: { Blocks } } = require("entanmo-clientjs");
 
 const delay = require("../../utils/delay");
 
-const kNodeServer = "http://47.102.135.35:6096";
+// const kNodeServer = "http://47.102.135.35:6096";
+const kNodeServer = "http://20.188.242.113:4098";
 
 class Blockchain {
     constructor() {
@@ -16,15 +16,7 @@ class Blockchain {
         this._priv.cursorHeight = 1;
         this._priv.currentHeight = 100;
 
-
         this._blocksInst = new Blocks();
-
-        this._socketio = SocketIOClient(kNodeServer);
-        this._socketio.on("blocks/change", ({ height }) => {
-            console.log("height:", height);
-            this._priv.currentHeight = height;
-        });
-
 
         this._loopTick = function tick() {
             if (self._priv.cursorHeight > self._priv.currentHeight) {
@@ -37,7 +29,6 @@ class Blockchain {
                 .then(result => {
                     if (result.done) {
                         const { block } = result.data;
-                        // console.log(`block.height(${block.height}), block.id(${block.id})`);
                         self._priv.blockCaches.push({ id: block.id, height: block.height });
                         self._priv.cursorHeight++;
                     }
@@ -48,24 +39,35 @@ class Blockchain {
                     setTimeout(tick, 100);
                 });
         };
-        // setImmediate(tick);
     }
 
     async init() {
         const currentHeight = await this._getHeight();
         this._priv.currentHeight = currentHeight;
-        this._priv.cursorHeight = currentHeight + 1;
+        this._priv.cursorHeight = 1;
 
-        const hashes = await this._getHashes(currentHeight - 100, currentHeight);
+        const hashes = await this._getHashes(this._priv.cursorHeight, this._priv.cursorHeight + 100);
         this._priv.blockCaches.push(...hashes);
+        this._priv.cursorHeight += hashes.length;
+
+        /// for socketio client
+        this._socketio = SocketIOClient(kNodeServer);
+        this._socketio.on("blocks/change", ({ height }) => {
+            console.log(`[Blockchain] NewHeight: ${height}`);
+            this._priv.currentHeight = height;
+        });
 
         setImmediate(this._loopTick);
     }
 
     async getHashes(hashCount) {
-        return shufflefy(this._priv.blockCaches.slice(-hashCount));
-        // const currentHeight = await this._getHeight();
-        // return await this._getHashes(currentHeight - (hashCount - 1), currentHeight);
+        const blockCount = this._priv.blockCaches.length;
+        let newHashes = null;
+        if (blockCount >= hashCount) {
+            newHashes = this._priv.blockCaches.slice(0, hashCount);
+            this._priv.blockCaches.splice(0, 1);
+        }
+        return newHashes;
     }
 
     async _getHeight() {

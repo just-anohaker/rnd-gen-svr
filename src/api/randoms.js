@@ -2,7 +2,7 @@
 
 const KoaRouter = require("koa-router");
 
-const { controller } = require("../modules/random-generator");
+const appContext = require("../app-context");
 
 const getinformationhandler = async ctx => {
     const query = ctx.query;
@@ -17,11 +17,15 @@ const getinformationhandler = async ctx => {
     }
 
     try {
+        const generator = appContext.getModule("random-generator");
+        if (!generator) {
+            throw new Error("no random generator module instance.");
+        }
         let info = null;
         if (hash != null) {
-            info = await controller.getInformationByRandom(hash);
+            info = await generator.getInformationByRandom(hash);
         } else if (idx != null) {
-            info = await controller.getInformationByIndex(idx);
+            info = await generator.getInformationByIndex(idx);
         } else {
             ctx.body = {
                 success: false,
@@ -59,8 +63,12 @@ const getrandomshandler = async ctx => {
         ? Number(query.limit)
         : 100;
     try {
-        const count = await controller.getCount();
-        const rnds = await controller.getRandoms(offset, limit);
+        const generator = appContext.getModule("random-generator");
+        if (!generator) {
+            throw new Error("no random generator module instance.");
+        }
+        const count = await generator.getCount();
+        const rnds = await generator.getRandoms(offset, limit);
         if (rnds != null) {
             ctx.body = {
                 success: true,
@@ -81,7 +89,11 @@ const getrandomshandler = async ctx => {
 
 const getcounthandler = async ctx => {
     try {
-        const count = await controller.getCount();
+        const generator = appContext.getModule("random-generator");
+        if (!generator) {
+            throw new Error("no random generator module instance.");
+        }
+        const count = await generator.getCount();
         ctx.body = {
             success: true,
             data: { count }
@@ -98,9 +110,8 @@ const getcounthandler = async ctx => {
     };
 };
 
-module.exports = (app, config) => {
-    controller.setup(config);
-
+module.exports = (app, opts) => {
+    void opts;
     const router = new KoaRouter();
 
     router.get("/random/getInfo", getinformationhandler);
