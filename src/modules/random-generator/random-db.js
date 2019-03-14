@@ -93,6 +93,26 @@ class RandomDB {
         }
         return randoms;
     }
+
+    async getLatestBlockHeight() {
+        try {
+            let count = await this.getCount();
+            if (count == null || count <= 0) {
+                return 1;
+            }
+
+            const info = await this.getInfoByIndex(count - 1);
+            if (info == null) {
+                return 1;
+            }
+
+            console.log(`[RandomDB] latestBlockHeight: ${info.hashes[0].height}`);
+            return info.hashes[0].height;
+        } catch (error) {
+            console.log("[RandomDB] getLatestBlockHeight:", error);
+        }
+        return 1;
+    }
 }
 
 module.exports = RandomDB;

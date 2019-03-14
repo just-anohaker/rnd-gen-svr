@@ -98,7 +98,8 @@ class Controller extends BaseModule {
         const self = this;
         if (this._intervalId != null) return;
 
-        await this._blockchainInst.init();
+        const latestBlockHeight = await this._randomDB.getLatestBlockHeight();
+        await this._blockchainInst.init(latestBlockHeight);
         function tick() {
             (async () => {
                 const rnd = await self._generate();

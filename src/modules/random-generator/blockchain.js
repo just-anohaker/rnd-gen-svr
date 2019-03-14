@@ -41,10 +41,10 @@ class Blockchain {
         };
     }
 
-    async init() {
+    async init(latestBlockHeight) {
         const currentHeight = await this._getHeight();
         this._priv.currentHeight = currentHeight;
-        this._priv.cursorHeight = 1;
+        this._priv.cursorHeight = latestBlockHeight || 1;
 
         const hashes = await this._getHashes(this._priv.cursorHeight, this._priv.cursorHeight + 100);
         this._priv.blockCaches.push(...hashes);
