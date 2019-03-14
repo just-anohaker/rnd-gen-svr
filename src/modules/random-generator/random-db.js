@@ -76,7 +76,7 @@ class RandomDB {
         try {
             const rnds = await new Promise((resolve, reject) => {
                 const results = [];
-                this._rndIndexDB.createReadStream({ offset, limit, reverse })
+                this._rndIndexDB.createReadStream({ gte: offset, limit, reverse })
                     .on("data", pair => {
                         results.push(pair.value);
                     })
