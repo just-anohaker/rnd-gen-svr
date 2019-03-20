@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const _ = require("lodash");
 const BigNumber = require("bignumber.js");
 
-const chaos = require("./chaos");
+const chaos = require("../../utils/chaos");
 
 class Generator {
     async rnd(hashes, iterCnt, sha256IterCnt) {

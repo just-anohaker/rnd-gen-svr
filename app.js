@@ -41,6 +41,10 @@ const _setup = async options => {
         console.log(`${ctx.method}:${ctx.path}`);
         await next();
     });
+    app.use(async (ctx, next) => {
+        ctx.body = ctx.request.body;
+        await next();
+    });
     const apiDir = path.resolve(__dirname, "src", "api");
     const APIs = fs.readdirSync(apiDir);
     APIs.forEach(el => {
