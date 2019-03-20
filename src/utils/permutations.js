@@ -87,7 +87,7 @@ class Permutations {
    * @returns 返回结果集
    */
   getRepeatList(arr, size) {
-    var allResult = [];
+    let allResult = [];
 
     (function fn(arr, size, result) {
       if (result.length === size) {
@@ -142,7 +142,7 @@ class Permutations {
    * @returns 返回结果集
    */
   getCombineList(arr, size) {
-    var allResult = [];
+    let allResult = [];
     if (size > arr.length) {
       return allResult;
     }
@@ -170,6 +170,49 @@ class Permutations {
     return allResult;
   }
 
+  /**
+   * @description 获取多组排列组合的混合数据集
+   * 
+   * @param data 输入的二维数组，数组元素为一个对象，其中包含 
+   * @memberof arr:需要排列组合的数组，
+   * @memberof size:排列组合的输出数量，
+   * @memberof type:排列组合的类型【0：可重复，1：排列，2：组合】
+   * 
+   * @returns 返回对应规则下数据集混合后的总结果集
+   */
+  getMixedList(data) {
+    let allResult = [];
+
+    if (!data instanceof Array) {
+      return console.error("The input data is not array!");
+    }
+
+    let dataSet = [];
+    for (let i = 0; i < data.length; i++) {
+      let temp = data[i];
+      if (!temp.arr || !temp.arr instanceof Array) {
+        return console.error("The input data[ " + i + "] is not array!");
+      }
+
+      switch (temp.type) {
+        case 0:
+          dataSet[i] = self.getRepeatList(temp.arr, temp.size);
+          break;
+        case 1:
+          dataSet[i] = self.getArrangeList(temp.arr, temp.size);
+          break;
+        case 2:
+          dataSet[i] = self.getCombineList(temp.arr, temp.size);
+          break;
+        default:
+          dataSet[i] = [];
+          break;
+      }
+    }
+    allResult = self.doMixing(dataSet);
+    return allResult;
+  }
+
   /** 
    * @description 将一个二维数组,按纵向每个子数组取一个元素做混合
    * 
@@ -181,14 +224,14 @@ class Permutations {
     let results = [];
     let result = [];
     (function fn(arrs, index) {
-      for (var i = 0; i < arrs[index].length; i++) {
+      for (let i = 0; i < arrs[index].length; i++) {
         result[index] = arrs[index][i];
         if (index !== arrs.length - 1) {
           fn(arrs, index + 1)
         } else {
           // results.push(result.join(","));
           results.push(result);
-          // console.log(result, results.length - 1);
+          console.log(result, results.length - 1);
         }
       }
     })(arrs, 0);
