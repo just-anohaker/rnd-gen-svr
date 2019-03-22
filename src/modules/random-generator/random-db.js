@@ -56,7 +56,7 @@ class RandomDB {
             const rndHash = await this._rndIndexDB.get(index);
             info = await this.getInfoByRandom(rndHash);
         } catch (error) {
-            console.log("[RandomDB] getInfoByIndex error:", error);
+            console.log("[RandomDB][ERROR] GetInfoByIndex:", error);
         }
         return info;
     }
@@ -66,7 +66,7 @@ class RandomDB {
         try {
             info = await this._rndDB.get(rndHash, { valueEncoding: "json" });
         } catch (error) {
-            console.log("[RandomDB] getInfoByRandom error:", error);
+            console.log("[RandomDB][ERROR] GetInfoByRandom:", error);
         }
         return info;
     }
@@ -106,10 +106,10 @@ class RandomDB {
                 return 1;
             }
 
-            console.log(`[RandomDB] latestBlockHeight: ${info.hashes[0].height}`);
+            console.log(`[RandomDB] LatestBlockHeight: ${info.hashes[0].height}`);
             return info.hashes[0].height;
         } catch (error) {
-            console.log("[RandomDB] getLatestBlockHeight:", error);
+            console.log("[RandomDB][ERROR] GetLatestBlockHeight:", error);
         }
         return 1;
     }

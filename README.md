@@ -70,7 +70,7 @@
 
 ## Http
 
-### [GET] :/lottery/get
+### [POST] :/lottery/get
 
 *用于获取随机数在一定规则排列组合中的抽取结果*
 

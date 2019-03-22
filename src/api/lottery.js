@@ -16,25 +16,25 @@ const getLottery = async ctx => {
     let hash = query.hash;
 
     // TODO:参数校验
-    if (!data instanceof Array) {
+    if (!(data instanceof Array)) {
         ctx.body = {
             success: false,
             error: "Error input format by data !",
-            errorCode: -3
+            errorCode: -2
         };
         return;
     }
 
     try {
-        console.time('permute');
+        // console.time("permute");
         let lottery = null;
         let number = new BigNumber(hash, 16);
         let size = permutations.calcPermute(data);
         let index = number.mod(size).toNumber();
         lottery = permutations.getMiningIndex(data, index);
 
-        console.log(size, index, lottery)
-        console.timeEnd('permute');
+        // console.log(size, index, lottery);
+        // console.timeEnd("permute");
 
         if (lottery) {
             ctx.body = {
@@ -58,7 +58,7 @@ module.exports = (app, opts) => {
     void opts;
     const router = new KoaRouter();
 
-    router.get("/lottery/get", getLottery);
+    router.post("/lottery/get", getLottery);
 
     app.use(router.routes());
 };

@@ -19,35 +19,22 @@ class Blockchain {
         this._blocksInst = new Blocks();
 
         this._loopTick = function tick() {
-            if (self._priv.cursorHeight > self._priv.currentHeight) {
-                setTimeout(tick, 100);
-                return;
-            }
+            (async () => {
+                if (self._priv.cursorHeight > self._priv.currentHeight) return;
 
-            const reqHeight = self._priv.cursorHeight;
-            self._blocksInst.getBlocks(kNodeServer, {
-                    offset: reqHeight,
-                    limit: 100
-                })
-                .then(results => {
-                    if (results.done) {
-                        const {
-                            blocks
-                        } = results.data;
-                        for (let block of blocks) {
-                            self._priv.blockCaches.push({
-                                id: block.id,
-                                height: block.height
-                            });
-                            self._priv.cursorHeight++;
-                        }
+                const results = await self._blocksInst.getBlocks(kNodeServer, { offset: self._priv.cursorHeight, limit: 100 });
+                if (results.done) {
+                    const { blocks } = results.data;
+                    for (let block of blocks) {
+                        self._priv.blockCaches.push({ id: block.id, height: block.height });
+                        self._priv.cursorHeight++;
                     }
-                    setTimeout(tick, 100);
-                })
-                .catch(error => {
-                    void error;
-                    setTimeout(tick, 100);
-                });
+
+                    console.log("[Blockchain] NewCursor:", self._priv.cursorHeight);
+                }
+            })()
+                .then(() => setTimeout(tick, 100))
+                .catch(error => { void error; setTimeout(tick, 100); });
         };
     }
 
