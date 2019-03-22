@@ -58,7 +58,7 @@ module.exports = (app, opts) => {
     void opts;
     const router = new KoaRouter();
 
-    router.post("/lottery/get", getLottery);
+    router.post("/lottery", getLottery);
 
     app.use(router.routes());
 };

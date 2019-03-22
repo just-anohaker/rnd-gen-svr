@@ -115,7 +115,7 @@ module.exports = (app, opts) => {
     const router = new KoaRouter();
 
     router.get("/random/getInfo", getinformationhandler);
-    router.get("/random/get", getrandomshandler);
+    router.get("/random", getrandomshandler);
     router.get("/random/count", getcounthandler);
 
     app.use(router.routes());
