@@ -35,7 +35,7 @@
 | iter       | 迭代次数                                                     |
 | sha256iter | sha256计算迭代次数                                           |
 
-### [GET] :/random/get
+### [GET] :/random
 
 *用于获取随机数*
 
@@ -70,7 +70,7 @@
 
 ## Http
 
-### [POST] :/lottery/get
+### [POST] :/lottery
 
 *用于获取随机数在一定规则排列组合中的抽取结果*
 
