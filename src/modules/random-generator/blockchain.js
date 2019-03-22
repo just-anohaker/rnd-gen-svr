@@ -25,12 +25,22 @@ class Blockchain {
             }
 
             const reqHeight = self._priv.cursorHeight;
-            self._blocksInst.getBlock(kNodeServer, { height: reqHeight })
-                .then(result => {
-                    if (result.done) {
-                        const { block } = result.data;
-                        self._priv.blockCaches.push({ id: block.id, height: block.height });
-                        self._priv.cursorHeight++;
+            self._blocksInst.getBlocks(kNodeServer, {
+                    offset: reqHeight,
+                    limit: 100
+                })
+                .then(results => {
+                    if (results.done) {
+                        const {
+                            blocks
+                        } = results.data;
+                        for (let block of blocks) {
+                            self._priv.blockCaches.push({
+                                id: block.id,
+                                height: block.height
+                            });
+                            self._priv.cursorHeight++;
+                        }
                     }
                     setTimeout(tick, 100);
                 })
