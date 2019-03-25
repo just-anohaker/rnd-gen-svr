@@ -8,7 +8,6 @@ let ajv = new Ajv();
 const schema = require("../schema/ajv-lottery.js");
 
 const Permutations = require("../utils/permutations");
-let permutations = new Permutations();
 
 // const a = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33"];
 // const b = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"];
@@ -34,9 +33,9 @@ const getLottery = async ctx => {
         // console.time("permute");
         let lottery = null;
         let number = new BigNumber(hash, 16);
-        let size = permutations.calcPermute(data);
+        let size = Permutations.calcPermute(data);
         let index = number.mod(size).toNumber();
-        lottery = permutations.getMiningIndex(data, index);
+        lottery = Permutations.getMiningIndex(data, index);
         // console.log(size, index, lottery);
         // console.timeEnd("permute");
 

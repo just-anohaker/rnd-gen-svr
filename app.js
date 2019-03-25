@@ -72,7 +72,7 @@ function main() {
     program
         .version("1.0.0")
         .option("--hostname <hostname>", "Config server hostname", "0.0.0.0")
-        .option("--port <port>", "Configure server port", 3000)
+        .option("--port <port>", "Configure server port", 4567)
         .option("--dataDir <datadir>", "Configure data directory of data.", path.resolve(__dirname, "data"))
         .option("--hashCount <hashcount>", "Configure hashCount for every generate", 40)
         .option("--iter <iter>", "Configure iter times", 40)

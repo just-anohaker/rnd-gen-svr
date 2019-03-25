@@ -44,7 +44,12 @@ const getinformationhandler = async ctx => {
             return;
         }
     } catch (error) {
-        void error;
+        ctx.body = {
+            success: false,
+            error: error.toString(),
+            errorCode: -1
+        };
+        return;
     }
 
     ctx.body = {
@@ -62,13 +67,36 @@ const getrandomshandler = async ctx => {
     const limit = Number.isSafeInteger(Number(query.limit))
         ? Number(query.limit)
         : 100;
+    const nReverse = Number.isSafeInteger(Number(query.reverse));
+    let reverse = false;
+    if (nReverse && Number(query.reverse) == 1) {
+        reverse = true;
+    }
     try {
         const generator = appContext.getModule("random-generator");
         if (!generator) {
             throw new Error("no random generator module instance.");
         }
+        if (offset < 0) {
+            throw new Error("offset must more than or equal zero");
+        }
+        if (limit < 0) {
+            throw new Error("limit must be more than zero");
+        }
         const count = await generator.getCount();
-        const rnds = await generator.getRandoms(offset, limit);
+        let queryOffset = offset, queryLimit = limit;
+        if (reverse) {
+            queryOffset = count - 1 - offset;
+            if (queryOffset < 0) {
+                queryLimit -= Math.abs(queryOffset);
+                queryOffset = 0;
+            }
+
+            if (queryLimit <= 0) {
+                throw new Error(`Invalid range(${offset}, ${limit})`);
+            }
+        }
+        const rnds = await generator.getRandoms(queryOffset, queryLimit);
         if (rnds != null) {
             ctx.body = {
                 success: true,
@@ -77,7 +105,12 @@ const getrandomshandler = async ctx => {
             return;
         }
     } catch (error) {
-        void error;
+        ctx.body = {
+            success: false,
+            error: error.toString(),
+            errorCode: -1
+        };
+        return;
     }
 
     ctx.body = {
@@ -94,13 +127,20 @@ const getcounthandler = async ctx => {
             throw new Error("no random generator module instance.");
         }
         const count = await generator.getCount();
+        if (count != null) {
+            ctx.body = {
+                success: true,
+                data: { count }
+            };
+            return;
+        }
+    } catch (error) {
         ctx.body = {
-            success: true,
-            data: { count }
+            success: false,
+            error: error.toString(),
+            errorCode: -1
         };
         return;
-    } catch (error) {
-        void error;
     }
 
     ctx.body = {

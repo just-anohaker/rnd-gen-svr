@@ -62,7 +62,7 @@ class Blockchain {
         let newHashes = null;
         if (blockCount >= hashCount) {
             newHashes = this._priv.blockCaches.slice(0, hashCount);
-            this._priv.blockCaches.splice(0, 1);
+            this._priv.blockCaches.shift();
         }
         return newHashes;
     }
