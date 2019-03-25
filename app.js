@@ -5,6 +5,7 @@ const path = require("path");
 
 const Koa = require("koa");
 const BodyParser = require("koa-bodyparser");
+const cors = require("@koa/cors");
 const SocketIO = require("socket.io");
 const program = require("commander");
 
@@ -46,12 +47,14 @@ const _setup = async options => {
         ctx.body = ctx.request.body;
         await next();
     });
-    app.use(async (ctx, next) => {
-        // http CORS
-        ctx.response.append("Access-Control-Allow-Origin", "*");
-        ctx.response.append("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        await next();
-    });
+    // http CORS
+    app.use(cors());
+    // app.use(async (ctx, next) => {
+    //     // http CORS
+    //     ctx.response.append("Access-Control-Allow-Origin", "*");
+    //     ctx.response.append("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    //     await next();
+    // });
     const apiDir = path.resolve(__dirname, "src", "api");
     const APIs = fs.readdirSync(apiDir);
     APIs.forEach(el => {
