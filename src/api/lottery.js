@@ -35,7 +35,7 @@ const getLottery = async ctx => {
         let number = new BigNumber(hash, 16);
         let size = Permutations.calcPermute(data);
         let index = number.mod(size).toNumber();
-        lottery = Permutations.getMiningIndex(data, index);
+        lottery = Permutations.getMiningByIndex(data, index);
         // console.log(size, index, lottery);
         // console.timeEnd("permute");
 

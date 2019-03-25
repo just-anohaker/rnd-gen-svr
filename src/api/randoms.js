@@ -86,7 +86,7 @@ const getrandomshandler = async ctx => {
         const count = await generator.getCount();
         let queryOffset = offset, queryLimit = limit;
         if (reverse) {
-            queryOffset = count - 1 - offset;
+            queryOffset = count - limit - offset;
             if (queryOffset < 0) {
                 queryLimit -= Math.abs(queryOffset);
                 queryOffset = 0;

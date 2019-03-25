@@ -388,7 +388,7 @@ class Permutations {
      * 
      * @returns 返回总结果集中下标为index的元素，是一个数组
      */
-    static getMiningIndex(data, index) {
+    static getMiningByIndex(data, index) {
         let res = [];
         if (!_.isArray(data)) {
             return console.error("The input data is not array!");
