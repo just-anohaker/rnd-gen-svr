@@ -88,12 +88,14 @@ const getrandomshandler = async ctx => {
         if (reverse) {
             queryOffset = count - limit - offset;
             if (queryOffset < 0) {
-                queryLimit -= Math.abs(queryOffset);
+                // queryLimit -= Math.abs(queryOffset);
                 queryOffset = 0;
             }
-            if (queryLimit <= 0) {
-                queryLimit = 0;
-            }
+            const validCount = count - queryOffset;
+            queryLimit = Math.min(queryLimit, validCount);
+            // if (queryLimit <= 0) {
+            //      queryLimit = 0;
+            // }
         }
         const rnds = await generator.getRandoms(queryOffset, queryLimit);
         if (rnds != null) {
