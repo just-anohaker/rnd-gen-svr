@@ -91,9 +91,8 @@ const getrandomshandler = async ctx => {
                 queryLimit -= Math.abs(queryOffset);
                 queryOffset = 0;
             }
-
             if (queryLimit <= 0) {
-                throw new Error(`Invalid range(${offset}, ${limit})`);
+                queryLimit = 0;
             }
         }
         const rnds = await generator.getRandoms(queryOffset, queryLimit);
