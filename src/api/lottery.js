@@ -2,6 +2,10 @@
 
 const KoaRouter = require("koa-router");
 const BigNumber = require("bignumber.js");
+const Ajv = require("ajv");
+let ajv = new Ajv();
+
+const schema = require("../schema/ajv-lottery.js");
 
 const Permutations = require("../utils/permutations");
 let permutations = new Permutations();
@@ -12,18 +16,19 @@ let permutations = new Permutations();
 const getLottery = async ctx => {
     // let query = ctx.query;
     let query = ctx.body;
-    let data = query.data;
-    let hash = query.hash;
 
-    // TODO:参数校验
-    if (!(data instanceof Array)) {
+    let valid = ajv.validate(schema.lottery, query);
+    if (!valid) {
         ctx.body = {
             success: false,
-            error: "Error input format by data !",
+            error: "Error:" + ajv.errorsText(),
             errorCode: -2
         };
         return;
     }
+
+    let data = query.data;
+    let hash = query.hash;
 
     try {
         // console.time("permute");
@@ -32,7 +37,6 @@ const getLottery = async ctx => {
         let size = permutations.calcPermute(data);
         let index = number.mod(size).toNumber();
         lottery = permutations.getMiningIndex(data, index);
-
         // console.log(size, index, lottery);
         // console.timeEnd("permute");
 
