@@ -1,5 +1,4 @@
 const assert = require("assert");
-
 const _ = require("lodash");
 
 class Permutations {
@@ -330,7 +329,7 @@ class Permutations {
             } else {
                 let newArr = [].concat(arr);
                 newArr.splice(0, 1);
-                fn(i, (index + 1) % (p + 1), newArr);
+                fn(i, index - p, newArr);
             }
         })(0, index, arr);
 
@@ -388,7 +387,7 @@ class Permutations {
      * 
      * @returns 返回总结果集中下标为index的元素，是一个数组
      */
-    static getMiningByIndex(data, index) {
+    static getMixingByIndex(data, index) {
         let res = [];
         if (!_.isArray(data)) {
             return console.error("The input data is not array!");
