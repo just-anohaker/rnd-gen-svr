@@ -39,21 +39,19 @@ class Blockchain {
     }
 
     async init(latestBlockHeight) {
+        /// 初始化cursor 和 currentHeight
         const currentHeight = await this._getHeight();
         this._priv.currentHeight = currentHeight;
         this._priv.cursorHeight = latestBlockHeight || 1;
 
-        const hashes = await this._getHashes(this._priv.cursorHeight, this._priv.cursorHeight + 100);
-        this._priv.blockCaches.push(...hashes);
-        this._priv.cursorHeight += hashes.length;
-
-        /// for socketio client
+        /// for socketio client, listening for new block height notification
         this._socketio = SocketIOClient(kNodeServer);
         this._socketio.on("blocks/change", ({ height }) => {
             console.log(`[Blockchain] NewHeight: ${height}`);
             this._priv.currentHeight = height;
         });
 
+        /// 启动scheduler更新链上块信息
         setImmediate(this._loopTick);
     }
 
@@ -82,36 +80,6 @@ class Blockchain {
             delay(500);
         }
         return height;
-    }
-
-    async _getHashes(from, to) {
-        const blockHashes = [];
-        let loadCount = 0;
-        while (true) {
-            try {
-                const resp = await this._blocksInst.getBlocks(kNodeServer, { offset: from + loadCount, limit: 100 });
-                if (!resp.done) {
-                    continue;
-                }
-                const { blocks } = resp.data;
-                for (let i = 0; i < blocks.length; i++) {
-                    const b = blocks[i];
-                    blockHashes.push({ id: b.id, height: b.height });
-                    loadCount++;
-                    if (from + loadCount >= to + 1) {
-                        break;
-                    }
-                }
-                if (from + loadCount >= to + 1) {
-                    break;
-                }
-            } catch (error) {
-                void error;
-            }
-
-            delay(500);
-        }
-        return blockHashes;
     }
 }
 
