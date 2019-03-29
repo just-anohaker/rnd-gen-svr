@@ -64,6 +64,15 @@ const _setup = async options => {
         }
     });
 
+    /// 未定义接口能用处理
+    app.use(async ctx => {
+        ctx.body = {
+            success: false,
+            error: "API Endpoint was not found",
+            errorCode: -100
+        };
+    });
+
     const server = app.listen(options.port, options.hostname, () => {
         console.log(`[Server] Listening on ${options.hostname}:${options.port}.`);
     });
