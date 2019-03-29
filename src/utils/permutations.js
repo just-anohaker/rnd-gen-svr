@@ -50,13 +50,13 @@ class Permutations {
      */
     static calcPermute(data) {
         if (!_.isArray(data)) {
-            return console.error("The input data is not array!");
+            throw new Error("The input data is not array!");
         }
         let p = 1;
         for (let i = 0; i < data.length; i++) {
             let temp = data[i];
             if (!_.isArray(temp.arr)) {
-                return console.error("The input data[ " + i + "] is not array!");
+                throw new Error("The input data[ " + i + "] is not array!");
             }
 
             let len = 0;
@@ -184,14 +184,14 @@ class Permutations {
      */
     static getMixedList(data) {
         if (!_.isArray(data)) {
-            return console.error("The input data is not array!");
+            throw new Error("The input data is not array!");
         }
 
         let dataSet = [];
         for (let i = 0; i < data.length; i++) {
             let temp = data[i];
             if (!_.isArray(temp.arr)) {
-                return console.error("The input data[ " + i + "] is not array!");
+                throw new Error("The input data[ " + i + "] is not array!");
             }
 
             switch (temp.type) {
@@ -251,7 +251,7 @@ class Permutations {
         let len = arr.length;
         let max = Math.pow(len, size);
         if (index > max) {
-            return console.error("The index out of range!");
+            throw new Error("The index out of range!");
         }
 
         (function fn(i, index) {
@@ -280,7 +280,7 @@ class Permutations {
         let res = [];
         let max = Permutations.calcArrange(arr.length, size);
         if (index > max) {
-            return console.error("The index out of range!");
+            throw new Error("The index out of range!");
         }
 
         (function fn(i, index, arr) {
@@ -312,7 +312,7 @@ class Permutations {
         let res = [];
         let max = Permutations.calcCombine(arr.length, size);
         if (index > max) {
-            return console.error("The index out of range!");
+            throw new Error("The index out of range!");
         }
 
         (function fn(i, index, arr) {
@@ -353,7 +353,7 @@ class Permutations {
             p *= arrTemp.length;
         }
         if (index > p) {
-            return console.error("The index out of range!");
+            throw new Error("The index out of range!");
         }
 
         (function fn(i, index) {
@@ -390,12 +390,12 @@ class Permutations {
     static getMixingByIndex(data, index) {
         let res = [];
         if (!_.isArray(data)) {
-            return console.error("The input data is not array!");
+            throw new Error("The input data is not array~");
         }
 
         let p = Permutations.calcPermute(data);
-        if (index > p) {
-            return console.error("The index out of range!");
+        if (index >= p) {
+            throw new Error("The index out of range~");
         }
 
         (function fn(i, index) {
