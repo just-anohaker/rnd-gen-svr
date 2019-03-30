@@ -17,10 +17,15 @@ const kAppModules = [
 
 const _initModules = async options => {
     for (let module of kAppModules) {
-        const ClzModule = require(module[1]);
-        const inst = new ClzModule();
-        inst && await inst.init(options);
-        appContext.appendModule(module[0], inst);
+        try {
+            const ClzModule = require(module[1]);
+            const inst = new ClzModule();
+            inst && await inst.init(options);
+            inst && appContext.appendModule(module[0], inst);
+            console.log(`[AppINIT] module(${module[0]}) inited`);
+        } catch (error) {
+            console.log(`[AppINIT] module(${module[0]}) init failure, `, error);
+        }
     }
 };
 
