@@ -50,10 +50,18 @@ module.exports = {
             "index": {
                 "type": "integer"
             },
+            "hash": {
+                "type": "string"
+            },
             "limit": {
                 "type": "integer"
             }
         },
-        "required": ["data", "index"]
+        "oneOf": [{
+            "required": ["index"]
+        }, {
+            "required": ["hash"]
+        }],
+        "required": ["data"]
     }
 };

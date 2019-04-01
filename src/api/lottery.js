@@ -69,17 +69,27 @@ const getLotteryPagedata = async ctx => {
     }
 
     let data = query.data;
-    let index = query.index;
+    let index = 0;
     let limit = query.limit || 20;
 
     try {
         let lotterys = [];
+
+        if (query.index) {
+            index = query.index;
+        } else {
+            let number = new BigNumber(query.hash, 16);
+            let size = Permutations.calcPermute(data);
+            index = number.mod(size).toNumber();
+        }
+
         let first = index - index % limit;
 
         for (let i = 0; i < limit; i++) {
             let temp = Permutations.getMixingByIndex(data, first + i);
             if (temp) {
                 lotterys.push({
+                    isChoosed: (first + i) === index,
                     index: first + i,
                     lottery: temp
                 });
