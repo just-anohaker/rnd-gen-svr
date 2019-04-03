@@ -87,7 +87,12 @@ const getLotteryPagedata = async ctx => {
         let first = index - index % limit;
 
         limit = limit < size ? limit : size;
-        for (let i = 0; i < limit; i++) {
+        let len = limit;
+        if (size < first + limit) {
+            len = size - first;
+        }
+        
+        for (let i = 0; i < len; i++) {
             let temp = Permutations.getMixingByIndex(data, first + i);
             if (temp) {
                 lotterys.push({
