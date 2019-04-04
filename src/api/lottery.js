@@ -76,7 +76,7 @@ const getLotteryPagedata = async ctx => {
         let lotterys = [];
         let size = Permutations.calcPermute(data);
 
-        if (query.index) {
+        if (query.index || query.index === 0) {
             index = query.index;
         } else {
             let number = new BigNumber(query.hash, 16);
@@ -91,7 +91,7 @@ const getLotteryPagedata = async ctx => {
         if (size < first + limit) {
             len = size - first;
         }
-        
+
         for (let i = 0; i < len; i++) {
             let temp = Permutations.getMixingByIndex(data, first + i);
             if (temp) {
