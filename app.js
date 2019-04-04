@@ -10,6 +10,8 @@ const SocketIO = require("socket.io");
 const program = require("commander");
 
 const appContext = require("./src/app-context");
+const Response = require("./src/utils/response");
+const Exception = require("./src/utils/exception");
 
 const kAppModules = [
     ["random-generator", "./src/modules/random-generator"]
@@ -71,11 +73,10 @@ const _setup = async options => {
 
     /// 未定义接口能用处理
     app.use(async ctx => {
-        ctx.body = {
-            success: false,
-            error: "API Endpoint was not found",
-            errorCode: -100
-        };
+        return Response.exception(
+            ctx,
+            Exception.ofAPIEndpointNotExist(`${ctx.method}:${ctx.path} APIEndpoing not exist`)
+        );
     });
 
     const server = app.listen(options.port, options.hostname, () => {
