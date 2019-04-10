@@ -1,7 +1,10 @@
 "use strict";
 
 const assert = require("assert");
+
 const _ = require("lodash");
+const { BigNumber } = require("bignumber.js");
+const Ajv = require("ajv");
 
 class Context {
     constructor() {
@@ -13,6 +16,22 @@ class Context {
         this._koaInst = null;
         // for socketio server instance.
         this._socketio = null;
+
+        ///> json validator 
+        this._validator = new Ajv();
+        this._addCustomFormats();
+    }
+
+    _addCustomFormats() {
+        this._validator.addFormat("hex", value => {
+            try {
+                const checker = new BigNumber(value, 16);
+                return checker.isNaN() ? false : true;
+            } catch (err) {
+                void err;
+                return false;
+            }
+        });
     }
 
     get AppOptions() {
@@ -55,6 +74,10 @@ class Context {
         }
 
         return this._modules.get(name);
+    }
+
+    get Validator() {
+        return this._validator;
     }
 }
 

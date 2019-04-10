@@ -1,10 +1,9 @@
 "use strict";
 
 const KoaRouter = require("koa-router");
-const BigNumber = require("bignumber.js");
-const Ajv = require("ajv");
-let ajv = new Ajv();
+const { BigNumber } = require("bignumber.js");
 
+const appContext = require("../app-context");
 const schema = require("../schema/ajv-lottery.js");
 const Permutations = require("../utils/permutations");
 const Exception = require("../utils/exception");
@@ -15,9 +14,9 @@ const getLottery = async ctx => {
         let lottery = null;
 
         let query = ctx.body;
-        let valid = ajv.validate(schema.lottery, query);
+        let valid = appContext.Validator.validate(schema.lottery, query);
         if (!valid) {
-            throw Exception.ofUnvalidateParameter("ajv validate failure, " + ajv.errorsText());
+            throw Exception.ofUnvalidateParameter("ajv validate failure, " + appContext.Validator.errorsText());
         }
 
         let data = query.data;
@@ -41,9 +40,9 @@ const getLotteryPagedata = async ctx => {
         let lotterys = [];
 
         let query = ctx.body;
-        let valid = ajv.validate(schema.pagedata, query);
+        let valid = appContext.Validator.validate(schema.pagedata, query);
         if (!valid) {
-            throw Exception.ofUnvalidateParameter("ajv validate failure, " + ajv.errorsText());
+            throw Exception.ofUnvalidateParameter("ajv validate failure, " + appContext.Validator.errorsText());
         }
 
         let data = query.data;

@@ -4,7 +4,7 @@ const assert = require("assert");
 const crypto = require("crypto");
 
 const _ = require("lodash");
-const BigNumber = require("bignumber.js");
+const { BigNumber } = require("bignumber.js");
 
 const chaos = require("../../utils/chaos");
 

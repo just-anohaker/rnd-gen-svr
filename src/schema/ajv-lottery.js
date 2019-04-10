@@ -22,7 +22,8 @@ module.exports = {
                 }
             },
             hash: {
-                type: "string"
+                type: "string",
+                format: "hex"
             }
         },
         required: ["data", "hash"]
@@ -53,7 +54,8 @@ module.exports = {
                 type: "integer"
             },
             hash: {
-                type: "string"
+                type: "string",
+                format: "hex"
             },
             limit: {
                 type: "integer"
