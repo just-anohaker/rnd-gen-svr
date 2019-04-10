@@ -32,11 +32,7 @@ const getinformationhandler = async ctx => {
             ? Response.exception(ctx, Exception.ofNoMatchedResult())
             : Response.success(ctx, { information: info });
     } catch (error) {
-        let exception = error;
-        if (!(error instanceof Exception)) {
-            exception = Exception.ofUnknown(error.toString());
-        }
-        return Response.exception(ctx, exception);
+        return Response.exception(ctx, error);
     }
 };
 
@@ -72,11 +68,7 @@ const getrandomshandler = async ctx => {
             ? Response.exception(ctx, Exception.ofNoMatchedResult())
             : Response.success(ctx, { randoms: rnds, count });
     } catch (error) {
-        let exception = error;
-        if (!(error instanceof Exception)) {
-            exception = Exception.ofUnknown(error.toString());
-        }
-        Response.exception(ctx, exception);
+        Response.exception(ctx, error);
     }
 };
 
@@ -91,11 +83,7 @@ const getcounthandler = async ctx => {
             ? Response.exception(ctx, Exception.ofNoMatchedResult())
             : Response.success(ctx, { count });
     } catch (error) {
-        let exception = error;
-        if (!(error instanceof Exception)) {
-            exception = Exception.ofUnknown(error.toString());
-        }
-        return Response.exception(ctx, exception);
+        return Response.exception(ctx, error);
     }
 };
 

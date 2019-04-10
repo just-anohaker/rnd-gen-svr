@@ -7,77 +7,59 @@ let ajv = new Ajv();
 
 const schema = require("../schema/ajv-lottery.js");
 const Permutations = require("../utils/permutations");
+const Exception = require("../utils/exception");
+const Response = require("../utils/response");
 
 const getLottery = async ctx => {
-    let query = ctx.body;
-
-    let valid = ajv.validate(schema.lottery, query);
-    if (!valid) {
-        ctx.body = {
-            success: false,
-            error: "Error:" + ajv.errorsText(),
-            errorCode: -2
-        };
-        return;
-    }
-
-    let data = query.data;
-    let hash = query.hash;
-
     try {
         let lottery = null;
+
+        let query = ctx.body;
+        let valid = ajv.validate(schema.lottery, query);
+        if (!valid) {
+            throw Exception.ofUnvalidableParameter("Valid error:" + ajv.errorsText());
+        }
+
+        let data = query.data;
+        let hash = query.hash;
+
         let number = new BigNumber(hash, 16);
         let size = Permutations.calcPermute(data);
         let index = number.mod(size).toNumber();
         lottery = Permutations.getMixingByIndex(data, index);
 
-        if (lottery) {
-            ctx.body = {
-                success: true,
+        lottery === null ?
+            Response.exception(ctx, Exception.ofNoMatchedResult()) :
+            Response.success(ctx, {
                 index,
                 lottery
-            };
-            return;
-        }
+            });
     } catch (error) {
-        ctx.body = {
-            success: false,
-            error: error.toString(),
-            errorCode: -2
-        };
-        return;
+        return Response.exception(ctx, error);
     }
-
-    ctx.body = {
-        success: false,
-        error: "Unknown exception",
-        errorCode: -2
-    };
 };
 
 const getLotteryPagedata = async ctx => {
-    let query = ctx.body;
-
-    let valid = ajv.validate(schema.pagedata, query);
-    if (!valid) {
-        ctx.body = {
-            success: false,
-            error: "Error:" + ajv.errorsText(),
-            errorCode: -2
-        };
-        return;
-    }
-
-    let data = query.data;
-    let index = 0;
-    let limit = query.limit || 20;
-
     try {
         let lotterys = [];
+
+        let query = ctx.body;
+        let valid = ajv.validate(schema.pagedata, query);
+        if (!valid) {
+            throw Exception.ofUnvalidableParameter("Valid error:" + ajv.errorsText());
+        }
+
+        let data = query.data;
+        let index = 0;
+        let limit = query.limit || 20;
+
         let size = Permutations.calcPermute(data);
 
         if (query.index || query.index === 0) {
             index = query.index;
+            if (index > size) {
+                throw Exception.ofUnvalidableParameter("The index is out of size");
+            }
         } else {
             let number = new BigNumber(query.hash, 16);
 
@@ -102,28 +84,14 @@ const getLotteryPagedata = async ctx => {
                 });
             }
         }
-
-        if (lotterys) {
-            ctx.body = {
-                success: true,
+        lotterys === [] ?
+            Response.exception(ctx, Exception.ofNoMatchedResult()) :
+            Response.success(ctx, {
                 lotterys
-            };
-            return;
-        }
+            });
     } catch (error) {
-        ctx.body = {
-            success: false,
-            error: error.toString(),
-            errorCode: -2
-        };
-        return;
+        return Response.exception(ctx, error);
     }
-
-    ctx.body = {
-        success: false,
-        error: "Unknown exception",
-        errorCode: -2
-    };
 };
 
 module.exports = (app, opts) => {

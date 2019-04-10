@@ -12,8 +12,10 @@ class Response {
     }
 
     static exception(ctx, error) {
-        if (!(error instanceof Exception)) {
+        if (error == null) {//null or undefined
             error = Exception.ofUnknown();
+        } else if (!(error instanceof Exception)) {
+            error = Exception.ofUnknown(error.toString());
         }
         ctx.body = {
             success: false,
