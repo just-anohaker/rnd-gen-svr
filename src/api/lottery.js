@@ -17,7 +17,7 @@ const getLottery = async ctx => {
         let query = ctx.body;
         let valid = ajv.validate(schema.lottery, query);
         if (!valid) {
-            throw Exception.ofUnvalidateParameter("Valid error:" + ajv.errorsText());
+            throw Exception.ofUnvalidateParameter("ajv validate failure, " + ajv.errorsText());
         }
 
         let data = query.data;
@@ -43,7 +43,7 @@ const getLotteryPagedata = async ctx => {
         let query = ctx.body;
         let valid = ajv.validate(schema.pagedata, query);
         if (!valid) {
-            throw Exception.ofUnvalidateParameter("Valid error:" + ajv.errorsText());
+            throw Exception.ofUnvalidateParameter("ajv validate failure, " + ajv.errorsText());
         }
 
         let data = query.data;
@@ -55,7 +55,7 @@ const getLotteryPagedata = async ctx => {
         if (query.index || query.index === 0) {
             index = query.index;
             if (index > size) {
-                throw Exception.ofUnvalidableParameter("The index is out of size");
+                throw Exception.ofUnvalidableParameter(`The index(${index}) is out of size(${size})`);
             }
         } else {
             let number = new BigNumber(query.hash, 16);
