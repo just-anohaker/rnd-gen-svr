@@ -25,7 +25,7 @@ class Context {
     _addCustomFormats() {
         this._validator.addFormat("hex", value => {
             try {
-                const checker = new BigNumber(value, 16);
+                const checker = new BigNumber(value.toLowerCase(), 16);
                 return checker.isNaN() ? false : true;
             } catch (err) {
                 void err;
