@@ -54,7 +54,7 @@ const getLotteryPagedata = async ctx => {
 
         if (query.index || query.index === 0) {
             index = query.index;
-            if (index > size) {
+            if (index >= size) {
                 throw Exception.ofUnvalidableParameter(`The index(${index}) is out of size(${size})`);
             }
         } else {
