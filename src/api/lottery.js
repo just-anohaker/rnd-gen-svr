@@ -17,7 +17,7 @@ const getLottery = async ctx => {
         let query = ctx.body;
         let valid = ajv.validate(schema.lottery, query);
         if (!valid) {
-            throw Exception.ofUnvalidableParameter("Valid error:" + ajv.errorsText());
+            throw Exception.ofUnvalidateParameter("Valid error:" + ajv.errorsText());
         }
 
         let data = query.data;
@@ -28,12 +28,9 @@ const getLottery = async ctx => {
         let index = number.mod(size).toNumber();
         lottery = Permutations.getMixingByIndex(data, index);
 
-        lottery === null ?
-            Response.exception(ctx, Exception.ofNoMatchedResult()) :
-            Response.success(ctx, {
-                index,
-                lottery
-            });
+        lottery === null
+            ? Response.exception(ctx, Exception.ofNoMatchedResult())
+            : Response.success(ctx, { index, lottery });
     } catch (error) {
         return Response.exception(ctx, error);
     }
@@ -46,7 +43,7 @@ const getLotteryPagedata = async ctx => {
         let query = ctx.body;
         let valid = ajv.validate(schema.pagedata, query);
         if (!valid) {
-            throw Exception.ofUnvalidableParameter("Valid error:" + ajv.errorsText());
+            throw Exception.ofUnvalidateParameter("Valid error:" + ajv.errorsText());
         }
 
         let data = query.data;
@@ -84,11 +81,9 @@ const getLotteryPagedata = async ctx => {
                 });
             }
         }
-        lotterys === [] ?
-            Response.exception(ctx, Exception.ofNoMatchedResult()) :
-            Response.success(ctx, {
-                lotterys
-            });
+        lotterys.length === 0
+            ? Response.exception(ctx, Exception.ofNoMatchedResult())
+            : Response.success(ctx, { lotterys });
     } catch (error) {
         return Response.exception(ctx, error);
     }
