@@ -22,7 +22,7 @@ const getLottery = async ctx => {
         let data = query.data;
         let hash = query.hash;
 
-        let number = new BigNumber(hash, 16);
+        let number = new BigNumber(hash.toLowerCase(), 16);
         let size = Permutations.calcPermute(data);
         let index = number.mod(size).toNumber();
         lottery = Permutations.getMixingByIndex(data, index);
@@ -57,7 +57,7 @@ const getLotteryPagedata = async ctx => {
                 throw Exception.ofUnvalidableParameter(`The index(${index}) is out of size(${size})`);
             }
         } else {
-            let number = new BigNumber(query.hash, 16);
+            let number = new BigNumber(query.hash.toLowerCase(), 16);
 
             index = number.mod(size).toNumber();
         }
